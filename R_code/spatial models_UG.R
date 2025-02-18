@@ -156,7 +156,7 @@ ir_data_plot1<-ggplot() +
 
 # because we saved the ggplot object, we can add extra details to the plot, like
 # splitting out years:
-\
+
 # There are only two years with data, and they are close enough in time. So we
 # can probably ignore temporal variation for now
 
