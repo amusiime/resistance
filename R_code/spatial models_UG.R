@@ -3,10 +3,10 @@
 # load packages
 source('R_code/packages.R')
 
-# 1. Read in some real presence-absence data, a nice clean subset of the *old*
-# Vector Atlas dataset, restricted to Kenya, collections of indoor resting
-# mosquitoes, and combining all records of members of the Anopheles gambiae
-# complex together.
+# 1. Read real presence-absence data ---------------------------------------------------------------
+# 1. Read in a nice clean subset of the *old* Vector Atlas dataset, restricted 
+# to Kenya, collections of indoor resting mosquitoes, and combining all 
+# records of members of the Anopheles gambiae complex together.
 ir_data_raw <- read.csv("Raw_data/res_data_ug1.csv",sep =";")
 
 # add on a calculation of mortality
@@ -37,8 +37,7 @@ bioclim_uganda <- worldclim_country(
  path = "raster"
 )
 
-# 2. Read in some environmental covariates for Kenya.
-
+# 2. Read in environmental covariates for Kenya ------------------------------
 bioclim <- rast("Rasters/ug_bio.tif")
 
 # We'll use the same low resolution bioclim covariate layers for Kenya as for
@@ -75,8 +74,7 @@ ir_data_plot <- ggplot() +
   theme_minimal()
 
 
-
-# 3. Crop the spatial areas down to the region with sufficient IR data
+# 3. Crop the spatial areas to regions with sufficient IR data --------------
 
 # We know our models won't be able to predict across the whole country from
 # these data, so we'll zoom in on Western Kenya
@@ -133,7 +131,8 @@ ir_data_plot1<-ggplot() +
 # There are only two years with data, and they are close enough in time. So we
 # can probably ignore temporal variation for now
 
-# 4. Fit and plot a spatial-only model
+
+# 4. Fit and plot a spatial-only model ---------------------------------------
 
 # we can fit a spatial smoothing model using mgcv like this:
 
@@ -207,7 +206,8 @@ spatial_only_multi <- ir_data_plot1 +
 
 spatial_only_multi
 
-# 5. Fit and plot a model with covariates and a spatial smooth
+
+# 5. Fit and plot model with covariates and spatial smooth ----------------
 
 # first, we need to extract the covariate values again, and add them to our
 # training data
