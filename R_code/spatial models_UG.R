@@ -1,5 +1,6 @@
 # Fitting a spatial smoothing model
 
+
 # all records of members of the Anopheles gambiae complex together.
 
 # 2. Read in some environmental covariates for Uganda, and plot the IR data over
@@ -33,6 +34,7 @@ library(mgcv)
 # complex together.
 ir_data_raw <- read.csv("Raw_data/res_data_ug1.csv",sep =";")
 
+
 # add on a calculation of mortality
 ir_data <- ir_data_raw %>%
   as_tibble() %>% 
@@ -42,18 +44,15 @@ ir_data <- ir_data_raw %>%
     mortality = number_dead / number_exposed
   ) %>% 
   dplyr::mutate(latitude=str_replace(latitude, ",","."),
-         longitude=str_replace(longitude, ",",".")) %>% 
-  select(district,latitude,longitude, class, species,year,number_exposed, mortality) %>% 
-  filter(class=="Pyrethroids") %>%
-  dplyr::mutate(latitude= parse_number(latitude),
-                longitude=parse_number(longitude))
-
-
+                longitude=str_replace(longitude, ",",".")) %>% 
+  select(district, latitude, longitude, class, 
+         species, year, number_exposed, mortality) %>% 
+  filter(class == "Pyrethroids") %>%
+  dplyr::mutate(latitude = parse_number(latitude),
+                longitude = parse_number(longitude))
 
 # bioclimactic variables from worldclim
 # https://worldclim.org/data/bioclim.html
-
-
 bioclim_uganda <- worldclim_country(
   country = "UGANDA",
   var = "bio",
@@ -61,13 +60,11 @@ bioclim_uganda <- worldclim_country(
  path = "raster"
 )
 
-# 2. Read in some environmental covariates for Kenya.
-
+# 2. Read in environmental covariates for Kenya ------------------------------
 bioclim <- rast("Rasters/ug_bio.tif")
 
 # We'll use the same low resolution bioclim covariate layers for Kenya as for
 # the ENM practical
-
 
 # You can read more about these layers here:
 # https://www.worldclim.org/data/bioclim.html
@@ -98,9 +95,7 @@ ir_data_plot <- ggplot() +
   ) +
   theme_minimal()
 
-
-
-# 3. Crop the spatial areas down to the region with sufficient IR data
+# 3. Crop the spatial areas to regions with sufficient IR data --------------
 
 # We know our models won't be able to predict across the whole country from
 # these data, so we'll zoom in on Western Kenya
@@ -120,9 +115,7 @@ clean_theme <- theme_minimal() +
         axis.title.y = element_blank(),
         panel.grid.major = element_blank())
 
-
-
-ir_data_plot1<-ggplot() +
+ir_data_plot1 <- ggplot() +
   geom_spatraster(data = bioclim$wc2.1_30s_bio_1) +
   scale_fill_gradient(
     low = grey(0.01),
@@ -149,15 +142,13 @@ ir_data_plot1<-ggplot() +
   #facet_wrap(~year)+
   clean_theme
 
-
-
 # because we saved the ggplot object, we can add extra details to the plot, like
 # splitting out years:
-\
+
 # There are only two years with data, and they are close enough in time. So we
 # can probably ignore temporal variation for now
 
-# 4. Fit and plot a spatial-only model
+# 4. Fit and plot a spatial-only model ---------------------------------------
 
 # we can fit a spatial smoothing model using mgcv like this:
 
@@ -231,7 +222,7 @@ spatial_only_multi <- ir_data_plot1 +
 
 spatial_only_multi
 
-# 5. Fit and plot a model with covariates and a spatial smooth
+# 5. Fit and plot model with covariates and spatial smooth ----------------
 
 # first, we need to extract the covariate values again, and add them to our
 # training data
@@ -245,7 +236,7 @@ ir_coordinates <- ir_data %>%
 # interpret the model coefficients
 
 covariate_values <- terra::extract(bioclim,
-                            ir_coordinates)
+                                   ir_coordinates)
 
 ir_data_west_covariates <- bind_cols(
   ir_data,
@@ -264,9 +255,9 @@ spatial_env <- mgcv::gam(
 # to make predictions, we now need a raster with both the environmental
 # covariates, and the coordinates
 spatial_env_pred <- predict(c(bioclim, coords_raster),
-                             spatial_env,
-                             se.fit = TRUE,
-                             type = "response")
+                            spatial_env,
+                            se.fit = TRUE,
+                            type = "response")
 
 # and make the equivalent prediction plots
 # let's plot the predictions
@@ -307,5 +298,3 @@ spatial_env_multi
 # combine these two, plotting one above the other, and re-adding plot annotation
 spatial_only_multi / spatial_env_multi +
   plot_annotation("Spatial (top) and spatial + environment (bottom) models")
-
-
