@@ -1,13 +1,39 @@
 # Fitting a spatial smoothing model
 
-# load packages
-source('R_code/packages.R')
 
-# 1. Read real presence-absence data ---------------------------------------------------------------
-# 1. Read in a nice clean subset of the *old* Vector Atlas dataset, restricted 
-# to Kenya, collections of indoor resting mosquitoes, and combining all 
-# records of members of the Anopheles gambiae complex together.
-ir_data_raw <- read.csv("Raw_data/res_data_ug1.csv", sep =";")
+# all records of members of the Anopheles gambiae complex together.
+
+# 2. Read in some environmental covariates for Uganda, and plot the IR data over
+# it.
+
+# 3. Crop the spatial areas down to the region with sufficient IR data
+
+# 4. Fit and plot a spatial-only model
+
+# 5. Fit and plot a model with covariates and a spatial smooth
+
+# load the tidyverse R package for data manipulation and visualisation
+library(tidyverse)
+
+# load the terra package, which we will use for manipulating rasters
+library(terra)
+
+# load the tidyterra package for nice visualisation of rasters
+library(tidyterra)
+library(geodata)
+
+# load the patchwork package for combining multiple plots together
+library(patchwork)
+
+# and load the mgcv package for spatial smoothing
+library(mgcv)
+
+# 1. Read in some real presence-absence data, a nice clean subset of the *old*
+# Vector Atlas dataset, restricted to Kenya, collections of indoor resting
+# mosquitoes, and combining all records of members of the Anopheles gambiae
+# complex together.
+ir_data_raw <- read.csv("Raw_data/res_data_ug1.csv",sep =";")
+
 
 # add on a calculation of mortality
 ir_data <- ir_data_raw %>%
